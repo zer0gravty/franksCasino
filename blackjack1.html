@@ -3,21 +3,27 @@
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8" />
-    <title>Frank's Casino</title>
-    <stylesheet></stylesheet>
+    <title>Blackjack</title>
+    <link rel="stylesheet" href="" />
 </head>
 <body>
     <h1>Welcome To Blackjack.</h1>
     <p id="game-status">Ready to play?</p>
     <button id="deal-button">Deal</button>
-    <p>Dealer's cards:</p>
-    <p id="dealer-info">No cards.</p>
-    <p>  Score: </p>
-    <p>Player's cards:</p>
-    <p id="player-info">No cards.</p>
-    <p>  Score: </p>
+    <div id="blackjack-table">
+        <div>
+            <p>Dealer's cards:</p>
+            <p id="dealer-info">No cards.</p>
+            <p>Score:</p>
+        </div>
+        <div>
+            <p>Player's cards:</p>
+            <p id="player-info">No cards.</p>
+            <p>Score:</p>
+        </div>
+    </div>
     <button id="hit-button">Hit</button>
     <button id="stand-button">Stand</button>
-    <script type="text/javascript" src="gameLogic.js"></script>
+    <script src="gameLogic.js"></script>
 </body>
 </html>
