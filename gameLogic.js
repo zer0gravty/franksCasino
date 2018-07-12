@@ -12,7 +12,7 @@ let standButton = document.getElementById("stand-button");
 let gameStatus = document.getElementById("game-status");
 let dealerInfo = document.getElementById("dealer-info");
 let playerInfo = document.getElementById("player-info");
-let blackJackTable = getElementById("blackjack-table");
+let blackJackTable = document.getElementById("blackjack-table");
 
 //function to create a deck of cards
 function createDeck() {
@@ -44,17 +44,16 @@ blackJackTable.style.display = 'none';
 hitButton.style.display = 'none';
 standButton.style.display = 'none';
 
-dealButton.addEventListener('click', function () {
-    dealButton.style.display = 'none';
-    blackJackTable = 'inline';
-    hitButton.style.display = 'inline';
-    standButton.style.display = 'inline';
-    gameStatus.innerText = "Let the games begin!";
-})
+function displaycards(hand, player) {
+    for (let i = 0; i < hand.length; i++) {
+        player.innertext = hand[i].value + " of " + hand[i].suit;
+        player.innertext += '\n';
+    }
+}
 
 //create the deck and shuffle it five times for good random distribution
 let newDeck = createDeck();
-for(let i = 0; i < 5; i++) {
+for (let i = 0; i < 5; i++) {
     shuffleDeck(newDeck);
 }
 
@@ -66,14 +65,16 @@ function dealCards(deck) {
     dealerHand[1] = deck.shift();
 }
 
-//function displaycards(hand, player) {
-//    let hand = hand;
-//    let player = player;w
-//    for (let i = 0; i < hand.length; i++) {
-//        player.innertext = hand[i].value + " of " + hand[i].suit;
-//        player.innertext += '\n';
-//    }
-//}
+dealButton.addEventListener('click', function () {
+    dealCards(newDeck);
+    dealButton.style.display = 'none';
+    blackJackTable.style.display = 'inline';
+    hitButton.style.display = 'inline';
+    standButton.style.display = 'inline';
+    gameStatus.innerText = "Let the games begin!";
+    displaycards(playerHand, playerInfo);
+    displaycards(dealerHand, dealerInfo);
+})
 
 //function updatescore(hand) {
 //    let score = 0;
@@ -119,9 +120,6 @@ function dealCards(deck) {
 //    return score;
 //}
 
-//dealcards(newdeck);
-//displaycards(playerhand, playerinfo);
-//displaycards(dealerhand, dealerinfo);
 //playerscore = updatescore(playerhand);
 //dealerscore = updatescore(dealerhand);
 //console.log(playerscore, dealerscore);
