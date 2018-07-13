@@ -2,8 +2,9 @@
 let suits = ["Hearts", "Diamonds", "Clubs", "Spades"];
 let values = ["Ace", "King", "Queen", "Jack", "Ten", "Nine", "Eight", "Seven", "Six", "Five", "Four", "Three", "Two"];
 let playerHand = []; let dealerHand = [];
-let playerScore = 0; let dealerScore = 0;
 let gameOver = false;
+let handOver = false;
+let playerStand = false;
 
 //document variables
 let dealButton = document.getElementById("deal-button");
@@ -13,6 +14,8 @@ let gameStatus = document.getElementById("game-status");
 let dealerInfo = document.getElementById("dealer-info");
 let playerInfo = document.getElementById("player-info");
 let blackJackTable = document.getElementById("blackjack-table");
+let playerScore = 0;
+let dealerScore = 0;
 
 //function to create a deck of cards
 function createDeck() {
@@ -44,17 +47,57 @@ blackJackTable.style.display = 'none';
 hitButton.style.display = 'none';
 standButton.style.display = 'none';
 
-function displaycards(hand, player) {
+function displayCards(hand, player) {
+    let cards = ""
     for (let i = 0; i < hand.length; i++) {
-        player.innertext = hand[i].value + " of " + hand[i].suit;
-        player.innertext += '\n';
+        cards += hand[i].value + " of " + hand[i].suit;
+        cards += '\n';
     }
+    player.innerText = cards;
 }
 
-//create the deck and shuffle it five times for good random distribution
-let newDeck = createDeck();
-for (let i = 0; i < 5; i++) {
-    shuffleDeck(newDeck);
+function updateScore(hand) {
+    let score = 0;
+    for (let i = 0; i < hand.length; i++) {
+        switch (hand[i].value) {
+            case "Ace":
+                score += 11;
+                break;
+            case "King":
+            case "Queen":
+            case "Jack":
+            case "Ten":
+                score += 10;
+                break;
+            case "Nine":
+                score += 9;
+                break;
+            case "Eight":
+                score += 8;
+                break;
+            case "Seven":
+                score += 7;
+                break;
+            case "Six":
+                score += 6;
+                break;
+            case "Five":
+                score += 5;
+                break;
+            case "Four":
+                score += 4;
+                break;
+            case "Three":
+                score += 3;
+                break;
+            case "Two":
+                score += 2;
+                break;
+            default:
+                break;
+        }
+    }
+    return score;
 }
 
 //function to deal the cards, two to player and dealer, alternating at game start
@@ -65,62 +108,79 @@ function dealCards(deck) {
     dealerHand[1] = deck.shift();
 }
 
+
+
+
 dealButton.addEventListener('click', function () {
+    let newDeck = createDeck();
+    for (let i = 0; i < 5; i++) {
+        shuffleDeck(newDeck);
+    }
     dealCards(newDeck);
     dealButton.style.display = 'none';
     blackJackTable.style.display = 'inline';
     hitButton.style.display = 'inline';
     standButton.style.display = 'inline';
     gameStatus.innerText = "Let the games begin!";
-    displaycards(playerHand, playerInfo);
-    displaycards(dealerHand, dealerInfo);
+    displayCards(playerHand, playerInfo);
+    displayCards(dealerHand, dealerInfo);
+    playerScore = updateScore(playerHand);
+    dealerScore = updateScore(dealerHand);
+
+    if (dealerScore === 21 && playerScore !== 21) {
+        gameStatus.innerText = "Dealer wins! Play again?";
+        gameOver = true;
+    } else if (dealerScore === 21 && playerScore === 21) {
+        gameStatus.innerText = "It's a tie! PLay again?";
+        gameOver = true;
+    } else if (playerScore === 21 && dealerScore !== 21) {
+        gameStatus.innerText = "Blackjack Baby!";
+        gameOver = true;
+    }
+
+    hitButton.addEventListener('click', function () {
+        playerHand.push(newDeck.shift());
+        playerScore = updateScore(playerHand);
+        displayCards(playerHand, playerInfo);
+        if (playerScore === 21) {
+            gameStatus.innerText = "You Win! Play again?";
+            hitButton.style.display = 'none';
+            gameOver = true;
+        } else if (playerScore > 21) {
+            gameStatus.innerText = "You Busted! Play again?";
+            hitButton.style.display = 'none';
+            gameOver = true;
+        }
+    })
+
+    standButton.addEventListener('click', function () {
+        hitButton.style.display = 'none';
+        playerStand = true;
+        while (dealerScore < 17 && playerStand === true) {
+            dealerHand.push(newDeck.shift());
+            dealerScore = updateScore(dealerHand);
+            displayCards(dealerHand, dealerInfo);
+        }
+        if (dealerScore > playerScore && dealerScore <= 21) {
+            gameStatus.innerText = "Dealer Wins! Play again?";
+            gameOver = true;
+        } else if (dealerScore === playerScore) {
+            gameStatus.innerText = "It's a tie! Play again?";
+            gameOver = true;
+        } else if (dealerScore > 21) {
+            gameStatus.innerText = "Dealer Busted! You win! Play again?";
+            gameOver = true;
+        } else {
+            gameStatus.innerText = "Player wins! Play again?";
+            gameOver = true;
+        }
+    })
+
+    if (gameOver) {
+        dealButton.style.display = 'inline';
+        standButton.style.display = 'none';
+        hitButton.sytle.display = 'none';
+        playerScore = 0;
+        dealerScore = 0;
+    }
 })
-
-//function updatescore(hand) {
-//    let score = 0;
-//    for (let i = 0; i < hand.length; i++) {
-//        switch (hand[i].value) {
-//            case "ace":
-//                score += 11;
-//                break;
-//            case "king":
-//            case "queen":
-//            case "jack":
-//            case "ten":
-//                score += 10;
-//                break;
-//            case "nine":
-//                score += 9;
-//                break;
-//            case "eight":
-//                score += 8;
-//                break;
-//            case "seven":
-//                score += 7;
-//                break;
-//            case "six":
-//                score += 6;
-//                break;
-//            case "five":
-//                score += 5;
-//                break;
-//            case "four":
-//                score += 4;
-//                break;
-//            case "three":
-//                score += 3;
-//                break;
-//            case "two":
-//                score += 2;
-//                break;
-//            default:
-//                break;
-//        }
-//    }
-//    return score;
-//}
-
-//playerscore = updatescore(playerhand);
-//dealerscore = updatescore(dealerhand);
-//console.log(playerscore, dealerscore);
-console.log(playerHand, dealerHand);
